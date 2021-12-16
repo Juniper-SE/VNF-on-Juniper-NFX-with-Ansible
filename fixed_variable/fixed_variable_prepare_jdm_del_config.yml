@@ -1,0 +1,37 @@
+---
+- hosts:
+    - ubuntu_server
+  connection: local
+  gather_facts: no
+  vars:
+    vm_name: "newubuntu1"
+
+  tasks:
+  - name: delete file
+    file:
+      path: /root/GENERIC/{{ vm_name }}_delete.conf
+      state: absent
+
+  - template:
+      src: /root/GENERIC/generic_vm_config_delete_on_nfx.conf
+      dest: /root/GENERIC/{{ vm_name }}_delete.conf
+      force: yes
+      backup: no
+
+  - replace:
+      path: /root/GENERIC/{{ vm_name }}_delete.conf
+      regexp: 'virtual-network-functions generic;'
+      replace: 'virtual-network-functions {{ vm_name }};'
+      backup: no
+
+- hosts:
+    - nfx250-S1-TWO-host
+   gather_facts: false
+  vars:
+    vm_name: "newubuntu1"
+
+  tasks:
+  - name: copy file created
+    template:
+      src:  "{{playbook_dir}}/{{ vm_name }}_delete.conf"
+      dest: "/var/third-party/iso/{{ vm_name }}_delete.conf"

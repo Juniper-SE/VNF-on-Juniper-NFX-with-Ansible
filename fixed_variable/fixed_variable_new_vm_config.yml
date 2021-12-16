@@ -1,0 +1,54 @@
+---
+- hosts:
+    - nfx250-S1-TWO-host
+   roles:
+    - role: '{{playbook_dir}}'
+  gather_facts: false
+  vars:
+    vm_name: "newubuntu1"
+
+  tasks:
+  - name: create iso directory
+    file:
+      path: /var/third-party/iso
+      state: directory
+
+  - name: delete multiple files
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+      - "/var/third-party/iso/{{ vm_name }}_meta-data"
+      - "/var/third-party/iso/{{ vm_name }}_user-data"
+      - "/var/third-party/iso/{{ vm_name }}.iso"
+      - "/var/third-party/iso/{{ vm_name }}_create.conf"
+      - "/var/third-party/iso/{{ vm_name }}_delete.conf"
+
+  - name: copy file meta-data
+    template:
+      src:   meta-data
+      dest: "/var/third-party/iso/{{ vm_name }}_meta-data"
+
+  - name: replace vm_name in in meta-data file
+    replace:
+      path: "/var/third-party/iso/{{ vm_name }}_meta-data"
+      regexp: "generic"
+      replace: "{{ vm_name }}"
+      backup: no
+
+  - name: copy file user-data
+    template:
+      src:   user-data
+      dest: "/var/third-party/iso/{{ vm_name }}_user-data"
+
+  - name: replace vm_name in in user-data file
+    replace:
+      path: "/var/third-party/iso/{{ vm_name }}_user-data"
+      regexp: "generic"
+      replace: "{{ vm_name }}"
+      backup: no
+
+  - name: create bootiso
+    shell: genisoimage -output "{{ vm_name }}.iso" -volid cidata -joliet -rock "{{ vm_name }}_meta-data" "{{ vm_name }}_user-data"
+    args:
+      chdir: /var/third-party/iso

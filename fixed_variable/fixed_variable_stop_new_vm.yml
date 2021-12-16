@@ -1,0 +1,18 @@
+---
+- hosts:
+    - nfx250-S1-TWO-host
+  roles:
+    - Juniper.junos
+  connection: local
+  gather_facts: no
+  vars:
+    vm_name: "newubuntu1"
+
+  tasks:
+  - name: remove old {{ vm_name }} VM
+    junos_install_config:
+      host: "{{ inventory_hostname }}"
+      file: "{{playbook_dir}}/{{ vm_name }}_delete.conf"
+      overwrite: no
+      logfile: junos-config.log
+    ignore_errors: yes

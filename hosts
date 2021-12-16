@@ -1,0 +1,15 @@
+[junos_all:children]
+NFX_JCP_ALL
+
+[NFX_JCP_ALL]
+nfx250-S2-JCP1	junos_host=192.168.2.202
+nfx250-S1-JCP2  junos_host=192.168.2.207
+nfx250-S2-JCP3  junos_host=192.168.2.197
+
+[NFX_JDM_ALL]
+nfx250-S2-JDM1  ssh_host=192.168.2.200 ansible_connection=ssh ansible_user=root ansible_ssh_private_key_file=/root/.ssh/ansible
+nfx250-S1-JDM2  ssh_host=192.168.2.205 ansible_connection=ssh ansible_user=root ansible_ssh_private_key_file=/root/.ssh/ansible
+nfx250-S2-JDM3  ansible_ssh_host=192.168.2.195 ansible_connection=ssh ansible_user=root ansible_ssh_private_key_file=/root/.ssh/ansible
+
+[servers]
+ubuntu_server ansible_ssh_host=192.168.2.220

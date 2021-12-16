@@ -1,0 +1,16 @@
+---
+#- name: 1st playbook to prepare the VM image
+- import_playbook: fixed_variable_new_vm_image.yml
+
+#- name: 2nd playbook to prepare the VM config
+- import_playbook: fixed_variable_new_vm_config.yml
+
+#- name: 3rd playbook to create the config to add to NFX JDM
+- import_playbook: fixed_variable_prepare_jdm_set_config.yml
+
+#- name: 4th playbook to preparethe config to delete from NFX JDM
+- import_playbook: fixed_variable_prepare_jdm_del_config.yml
+
+#- name: 5th playbook to launch the VM on NFX using the precedent results
+- import_playbook: fixed_variable_launch_new_vm.yml
+

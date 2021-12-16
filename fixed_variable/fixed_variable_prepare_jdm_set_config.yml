@@ -1,0 +1,43 @@
+---
+- hosts:
+    - ubuntu_server
+  roles:
+    - role: '{{playbook_dir}}'
+  connection: local
+  gather_facts: no
+  vars:
+    vm_name: "newubuntu1"
+
+  tasks:
+  - name: delete file
+    file:
+      #path: /root/GENERIC/{{ vm_name }}_create.conf
+      path: "{{playbook_dir}}/{{ vm_name }}_create.conf"
+      state: absent
+
+  - template:
+      #src: /root/GENERIC/generic_vm_config_add_on_nfx.conf
+      #dest: /root/GENERIC/{{ vm_name }}_create.conf
+      src: generic_vm_config_add_on_nfx.conf
+      dest: "{{playbook_dir}}/{{ vm_name }}_create.conf"
+      force: yes
+      backup: no
+
+  - replace:
+      #path: /root/GENERIC/{{ vm_name }}_create.conf
+      path: "{{playbook_dir}}/{{ vm_name }}_create.conf"
+      regexp: "generic"
+      replace: "{{ vm_name }}"
+      backup: no
+
+- hosts:
+    - nfx250-S1-TWO-host
+    gather_facts: false
+  vars:
+    vm_name: "newubuntu1"
+
+  tasks:
+  - name: copy file created
+    template:
+      src:  "{{playbook_dir}}/{{ vm_name }}_create.conf"
+      dest: "/var/third-party/iso/{{ vm_name }}_create.conf"

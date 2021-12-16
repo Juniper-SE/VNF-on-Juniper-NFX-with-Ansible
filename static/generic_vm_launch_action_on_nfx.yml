@@ -1,0 +1,29 @@
+---
+- hosts: nfx250-S1-TWO
+  roles:
+  - Juniper.junos
+  connection: local
+  gather_facts: no
+
+  tasks:
+  - name: remove old generic VM
+    junos_install_config:
+      user=ansible
+      ssh_private_key_file="/root/.ssh/ansible"
+      port=22
+      host={{ inventory_hostname }}
+      file=generic_vm_config_delete_on_nfx.conf
+      overwrite=no
+      logfile=junos-config.log
+    ignore_errors: yes
+
+  - name: start generic VM
+    junos_install_config:
+      user=ansible
+      ssh_private_key_file="/root/.ssh/ansible"
+      port=22
+      host={{ inventory_hostname }}
+      file=generic_vm_config_add_on_nfx.conf
+      replace=yes
+      overwrite=no
+      logfile=junos-config.log

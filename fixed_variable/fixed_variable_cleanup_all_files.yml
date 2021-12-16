@@ -1,0 +1,39 @@
+---
+- hosts:
+    - ubuntu_server
+  roles:
+    - role: "{{playbook_dir}}"
+  connection: local
+  gather_facts: no
+  vars:
+    vm_name: "newubuntu1"
+
+  tasks:
+  - name: delete multiple files on ubuntu_server
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+      - "{{ vm_name }}_create.conf"
+      - "{{ vm_name }}_delete.conf"
+
+- hosts:
+    - nfx250-S2-ONE-host
+    - nfx250-S1-TWO-host
+    - nfx250-S2-THREE-host
+  gather_facts: false
+  vars:
+    vm_name: "newubuntu1"
+
+  tasks:
+  - name: delete multiple files on NFX
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+      - "/var/third-party/iso/{{ vm_name }}_meta-data"
+      - "/var/third-party/iso/{{ vm_name }}_user-data"
+      - "/var/third-party/iso/{{ vm_name }}.iso"
+      - "/var/third-party/iso/{{ vm_name }}_create.conf"
+      - "/var/third-party/iso/{{ vm_name }}_delete.conf"
+      - "/var/third-party/images/{{ vm_name }}.qcow2"

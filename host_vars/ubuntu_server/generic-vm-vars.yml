@@ -1,0 +1,41 @@
+---
+vm_name: "generic"
+vm_role: "vm_left"
+mode:    "routed"
+memory:      1048576
+hugepage:    true
+vcpu_number: 2
+vcpu_mapping:
+  - virtual_cpu:  0
+    physical_cpu: 5
+  - virtual_cpu:  1
+    physical_cpu: 11
+interfaces:
+  - if_name:   "eth0"
+    usage:     "internal"
+  - if_name:   "eth1"
+    usage:     "out-of-band"
+  - if_name:   "eth2"
+    usage:     "vlan"
+    mode:      "access"
+    vlan_name: "vlan-left"
+  - if_name:   "eth3"
+    usage:     "hsxe1"
+    mode:      "access"
+    vlan_name: "vlan-right"
+  # interface usage can be:
+  #usage:      "internal"
+  #usage:      "out-of-band"
+  #usage:     "vlan" for DKPK on OVS bridge
+  #usage:      "hsxe0" or "hsxe1" for SRIOV
+  #vlan_name: "vlan1" for single vlan name
+  #vlan_name: "vlan1 vlan2 vlan3" for multiple vlans
+  #vlan_name: "123" for single vlan id used for SRIOV
+  #- if_name:   "eth3"
+  #  usage:     "hsxe0"
+  #  mode:      "access"
+  #  vlan_name: "104"
+  #- if_name:   "eth4"
+  #  usage:     "vlan"
+  #  mode:      "trunk"
+  #  vlan_name: "vlan-1 vlan-2 vlan-3"

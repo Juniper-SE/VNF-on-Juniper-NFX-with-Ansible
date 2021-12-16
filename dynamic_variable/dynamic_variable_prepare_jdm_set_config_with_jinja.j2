@@ -1,0 +1,60 @@
+virtual-network-functions {{ vm_name }} {
+    image {
+        /var/third-party/images/{{ vm_name }}.qcow2;
+    }
+{# Set vcpus based on var file #}
+    virtual-cpu {
+{% if vcpu_mapping is defined %}
+{% for vcpu in vcpu_mapping %}
+        {{ vcpu.virtual_cpu }} {
+            physical-cpu {{ vcpu.physical_cpu }};
+        }
+{% endfor %}
+{% endif %}
+        count {{ vcpu_number }};
+    }
+    no-default-interfaces;
+{# Set interfaces based on var file #}
+{# Set interfaces for management only #}
+{% for interface in interfaces if (interface.usage == "internal" or interface.usage == "out-of-band") %}
+    interfaces {{ interface.if_name }} {
+        management {{ interface.usage }};
+    }
+{% endfor %}
+{# Set interfaces for DPDK (vlan) or SRIOV (hsxe0/1) #}
+{% for interface in interfaces if (interface.usage == "vlan" or interface.usage == "hsxe0" or interface.usage == "hsxe1") %}
+    interfaces {{ interface.if_name }} {
+        mapping {
+            {{ interface.usage }} {
+{% if interface.usage == "vlan" %}
+                mode {{ interface.mode }};
+                members [ {{ interface.vlan_name }} ];
+{% else %}
+                virtual-function {
+                    vlan-id {{ interface.vlan_name }};
+                }
+{% endif %}
+            }
+        }
+    }
+{% endfor %}
+    memory {
+        size {{ memory }};
+{# Set hugepage only if at least one vlan interface are used, no need for SRIOV #}
+{% if hugepage %}        features {
+            hugepages {
+                page-size 1024;
+            }
+        }
+{% endif %}
+    }
+    storage vdb {
+        type {
+            cdrom {
+                source {
+                    file /var/third-party/iso/{{ vm_name }}.iso;
+                }
+            }
+        }
+    }
+}

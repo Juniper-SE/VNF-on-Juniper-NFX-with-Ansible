@@ -1,0 +1,42 @@
+#cloud-config
+password: juniper123
+chpasswd: { expire: False }
+ssh_pwauth: True
+users:
+  - name: root
+    lock-passwd: false
+    ssh_authorized_keys:
+      - ecdsa-sha2-nistp384 AAAAE2VjZHNhLXNoYTItbmlzdHAzODQAAAAIbmlzdHAzODQAAABhBKX6aKPZHHIgmkuOWABQr5FY6tekGaW3SNJ62DOqS2mPPpj8F6wm876xtOkbrCIDTPosRjX+OfFFdJFWid19JzvStxmQBMXfyupZD+x8CtZ72I2uTmuwuHB/Rl125So0pg== ansible keypair
+
+chpasswd:
+  list: |
+    root:juniper123
+  expire: False
+
+write_files:
+  - path: /root/bootconfig.sh
+    owner: root:root
+    permissions: '0777'
+    content: |
+      #!/bin/bash
+      route del default gw 192.168.1.1
+      ifconfig ens3 up
+      ifconfig ens4 up
+      ifconfig ens5 up
+
+      dhclient ens4
+      dhclient ens5
+
+      #echo "nameserver 8.8.8.8" > /etc/resolv.conf
+      #used later to allow transit traffics
+      #echo 1 > /proc/sys/net/ipv4/ip_forward
+
+      sed -i '/By default this script does nothing/a /root/bootconfig.sh' /etc/rc.local
+      sed -i '/# By default this script does nothing/d' /etc/rc.local
+      exit 0
+
+runcmd:
+  - sed -i -e '/^PermitRootLogin/s/^.*$/PermitRootLogin yes/' /etc/ssh/sshd_config
+  - sed -i -e 's/^\#AuthorizedKeysFile/AuthorizedKeysFile/' /etc/ssh/sshd_config
+  - service ssh restart
+  - /root/bootconfig.sh

@@ -1,0 +1,31 @@
+---
+vm_name:  "ubuntu_router1"
+vm_role:  "vm_left"
+mode:     "routed"
+memory:      8388608
+hugepage:    true
+vcpu_number: 4
+vcpu_mapping:
+  - virtual_cpu:  0
+    physical_cpu: 1
+  - virtual_cpu:  1
+    physical_cpu: 2
+  - virtual_cpu:  2
+    physical_cpu: 7
+  - virtual_cpu:  3
+    physical_cpu: 8
+interfaces:
+  - if_name:   "eth0"
+    usage:     "internal"
+  - if_name:   "eth1"
+    usage:     "vlan"
+    mode:      "access"
+    vlan_name: "vlan-mgt"
+  - if_name:   "eth2"
+    usage:     "vlan"
+    mode:      "access"
+    vlan_name: "vlan-left"
+  - if_name:   "eth3"
+    usage:     "vlan"
+    mode:      "access"
+    vlan_name: "vlan-right"

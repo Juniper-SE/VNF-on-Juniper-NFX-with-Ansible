@@ -1,0 +1,22 @@
+---
+- hosts:
+    - nfx250-S1-TWO-host
+  roles:
+    - role: '{{playbook_dir}}'
+  gather_facts: false
+  vars:
+    vm_name: "newubuntu1"
+
+  tasks:
+  - name: wget of ubuntu cloudimage to nfx250
+    shell: wget -nc http://cloud-images.ubuntu.com/xenial/current/xenial-server-cloudimg-amd64-disk1.vmdk
+
+  - name: expand cloudimage to local qcow2
+    shell: qemu-img convert -f vmdk -O qcow2 xenial-server-cloudimg-amd64-disk1.vmdk xenial-server-cloudimg-amd64-disk1.qcow2
+    args:
+      chdir: /var/third-party/images
+
+  - name: create image workcopy
+    shell: cp xenial-server-cloudimg-amd64-disk1.qcow2 {{ vm_name }}.qcow2
+    args:
+      chdir: /var/third-party/images
